@@ -159,4 +159,21 @@ void multiplication() {
 	show(m, n, matrix);
 }
 
-void transpose() {}
+void transpose() {
+	int rows, cols;
+
+	printf("Введите количество строк и столбцов в матрице: ");
+	scanf("%d %d", &rows, &cols);
+
+	int original_matrix[rows][cols];
+	get_matrix(rows, cols, original_matrix);
+
+	int matrix[cols][rows];
+	for (int i=0;i<rows;i++) {
+		for (int j=0;j<cols;j++) {
+			matrix[j][i] = original_matrix[i][j];
+		}
+	}
+
+	show(cols, rows, matrix);
+}
