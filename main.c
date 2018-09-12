@@ -11,6 +11,8 @@ void rules();
 void get_matrix(int rows, int cols, int matrix[][cols]);
 void show(int rows, int cols, int matrix[][cols]);
 
+void determinist();
+
 int main() {
 	int choice;
 
@@ -34,6 +36,9 @@ int main() {
 		case 5:
 			multiplication();
 			break;
+		case 6:
+			determinist();
+			break;
 		default:
 			printf("Нет такого действия.");
 	}
@@ -48,6 +53,7 @@ void rules() {
 	printf("3 - Умножение на число\n");
 	printf("4 - Транспонирование\n");
 	printf("5 - Умножение матриц\n");
+	printf("6 - Найти определитель\n");
 }
 
 void get_matrix(int rows, int cols, int matrix[][cols]) {
@@ -176,4 +182,37 @@ void transpose() {
 	}
 
 	show(cols, rows, matrix);
+}
+
+void determinist() {
+	int n;
+	printf("Укажите матрица какого порядка вам нужна: ");
+	scanf("%d", &n);
+
+	int matrix[n][n];
+	get_matrix(n, n, matrix);
+
+	int det;
+
+	switch (n) {
+		case 1:
+			det = matrix[0][0];
+			break;
+		case 2:
+			det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+			break;
+		case 3:
+			// схема Саррюса
+			det = matrix[0][0] * matrix[1][1] * matrix[2][2] + // главная диагональ
+						matrix[0][2] * matrix[1][0] * matrix[2][1] + // равнобедренный треугольник
+						matrix[0][1] * matrix[1][2] * matrix[2][0] - // равнобедренный треугольник
+						matrix[0][2] * matrix[1][1] * matrix[2][0] - // побочная диагональ
+						matrix[0][0] * matrix[1][2] * matrix[2][1] - // равнобедренный треугольник
+						matrix[0][1] * matrix[2][2] * matrix[1][0];  // равнобедренный треугольник
+			break;
+		default:
+			break;
+	}
+
+	printf("Детерминант равен: %d\n", det);
 }
