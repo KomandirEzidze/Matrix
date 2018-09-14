@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 void addition();
 void subtraction();
@@ -11,6 +12,7 @@ void rules();
 void get_matrix(int rows, int cols, int matrix[][cols]);
 void show(int rows, int cols, int matrix[][cols]);
 
+int det(int n, int matrix[n][n]);
 void determinist();
 
 int main() {
@@ -184,26 +186,19 @@ void transpose() {
 	show(cols, rows, matrix);
 }
 
-void determinist() {
-	int n;
-	printf("Укажите матрица какого порядка вам нужна: ");
-	scanf("%d", &n);
-
-	int matrix[n][n];
-	get_matrix(n, n, matrix);
-
-	int det;
+int det(int n, int matrix[n][n]) {
+	int result;
 
 	switch (n) {
 		case 1:
-			det = matrix[0][0];
+			result = matrix[0][0];
 			break;
 		case 2:
-			det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+			result = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
 			break;
 		case 3:
 			// схема Саррюса
-			det = matrix[0][0] * matrix[1][1] * matrix[2][2] + // главная диагональ
+			result = matrix[0][0] * matrix[1][1] * matrix[2][2] + // главная диагональ
 						matrix[0][2] * matrix[1][0] * matrix[2][1] + // равнобедренный треугольник
 						matrix[0][1] * matrix[1][2] * matrix[2][0] - // равнобедренный треугольник
 						matrix[0][2] * matrix[1][1] * matrix[2][0] - // побочная диагональ
@@ -211,8 +206,34 @@ void determinist() {
 						matrix[0][1] * matrix[2][2] * matrix[1][0];  // равнобедренный треугольник
 			break;
 		default:
-			break;
+			result = 0;
+			for (int j=0;j<n;j++) {
+				int temp_matrix[n-1][n-1];
+				for (int i=0;i<n-1;i++) {
+					for (int k=0;k<n;k++) {
+						if (k < j) {
+							temp_matrix[i][k] = matrix[i+1][k];
+						} else if (k > j) {
+							temp_matrix[i][k-1] = matrix[i+1][k];
+						}
+					}
+				}
+				int sign = j%2==0 ? 1 : -1;
+				result += matrix[0][j] * det(n-1 ,temp_matrix) * sign;
+			}
 	}
 
-	printf("Детерминант равен: %d\n", det);
+	return result;
+}
+
+void determinist() {
+	int n;
+	printf("Укажите для матрицы какого порядка нужно найти определитель: ");
+	scanf("%d", &n);
+
+	int matrix[n][n];
+	get_matrix(n, n, matrix);
+
+	int result = det(n, matrix);
+	printf("Определитель матрицы равен: %d\n", result);
 }
