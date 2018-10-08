@@ -6,12 +6,14 @@ void subtraction();
 void multiplic_number();
 void multiplication();
 void transpose();
+void revers();
 
 void rules();
 
 void get_matrix(int rows, int cols, int matrix[][cols]);
-void show_int(int rows, int cols, int matrix[][cols]);
-void show_float(int rows, int cols, float matrix[][cols]);
+void show_int(int rows, int cols, int matrix[rows][cols]);
+void show_float(int rows, int cols, float matrix[rows][cols]);
+void show_determinist(int n, int matrix[n][n]);
 
 int det(int n, int matrix[n][n]);
 void determinist();
@@ -45,8 +47,7 @@ int main() {
 			determinist();
 			break;
 		case 7:
-			inverse();
-			break;
+		  revers();
 		default:
 			printf("Нет такого действия.");
 	}
@@ -98,7 +99,6 @@ void addition() {
 }
 
 void show_int(int rows, int cols, int matrix[][cols]) {
-	printf("Ваша матрица:\n");
 	for (int i=0;i<rows;i++) {
 		for (int j=0;j<cols;j++) {
 			printf("%d\t", matrix[i][j]);
@@ -108,13 +108,16 @@ void show_int(int rows, int cols, int matrix[][cols]) {
 }
 
 void show_float(int rows, int cols, float matrix[][cols]) {
-	printf("Ваша матрица:\n");
 	for (int i=0;i<rows;i++) {
 		for (int j=0;j<cols;j++) {
 			printf("%.2f\t", matrix[i][j]);
 		}
 		printf("\n");
 	}
+}
+
+void show_determinist(int n, int matrix[n][n]) {
+
 }
 
 void subtraction() {
@@ -255,55 +258,60 @@ void determinist() {
 	printf("Определитель матрицы равен: %d\n", result);
 }
 
-void inverse() {
+void revers(){
 	int n;
-	printf("Укажите для матрицы какого порядка вы хотите найти обратную матрицу: ");
+	printf("Введите порядок матрицы: ");
 	scanf("%d", &n);
 
 	int matrix[n][n];
 	get_matrix(n, n, matrix);
 
-	float deter = det(n, matrix);
+	int det_matrix = det(n, matrix);
 
-	if (deter != 0) {
+	if (det_matrix != 0) {
+
 		int transpose_matrix[n][n];
-		for (int i=0;i<n;i++) {
-			for (int j=0;j<n;j++) {
-				transpose_matrix[j][i] = matrix[i][j];
+		for (int i=0; i<n; i++) {
+			for (int j=0; j<n; j++) {
+	      transpose_matrix[i][j] = matrix[j][i];
 			}
 		}
-		show_int(n, n, transpose_matrix);
 
 		int union_matrix[n][n];
-		for (int i=0;i<n;i++) {
-			for (int j=0;j<n;j++) {
-				int temp_matrix[n-1][n-1];
-				for (int k=0;k<n-1;k++) {
-					for (int m=0;m<n-1;m++) {
-						if ((k>i) && (m<j)) {
-							temp_matrix[k][m] = transpose_matrix[k+1][m]; // первая четверть
-						} else if ((k<i) && (m<j)) {
-							temp_matrix[k][m] = transpose_matrix[k][m]; // вторая четверть
-						} else if ((k<i) && (m>j)) {
-							temp_matrix[k][m] = transpose_matrix[k][m+1]; // третья четверть
-						} else if ((k>i) && (m>j)) {
-							temp_matrix[k][m] = transpose_matrix[k+1][m+1]; // четвертая четверть
+		for (int i=0; i<n; i++) {
+			for (int j=0; j<n; j++) {
+    		int minor[n-1][n-1];
+
+				for (int a=0; a<n; a++) {
+		  		for (int b=0; b<n; b++) {
+						if (a<i && b>j) {
+							minor[a][b-1]=transpose_matrix[a][b];
+						}
+						else if (a<i && b<j) {
+							minor[a][b]=transpose_matrix[a][b];
+						}
+						else if (a>i && b<j) {
+							minor[a-1][b]=transpose_matrix[a][b];
+						}
+						else if (a>i && b>j) {
+							minor[a-1][b-1]=transpose_matrix[a][b];
 						}
 					}
 				}
-				int sign = ((i+j)%2==0)?1:-1;
-				union_matrix[i][j] = sign * det(n-1, temp_matrix);
-			}
-		}
-		show_int(n, n, union_matrix);
 
-		float inverse_matrix[n][n];
-		for (int i=0;i<n;i++) {
-			for (int j=0;j<n;j++) {
-				inverse_matrix[i][j] = 1/deter * union_matrix[i][j];
+				int sign=(((i+j)%2==0)?1:-1);
+				union_matrix[i][j]=sign*det(n-1,minor);
 			}
 		}
 
-		show_float(n, n, inverse_matrix);
+
+		float revers_matrix[n][n];
+		for (int i=0; i<n; i++) {
+			for (int j=0; j<n; j++) {
+				revers_matrix[i][j]=1/(float)det_matrix*union_matrix[i][j];
+			}
+		}
+
+		show_float(n, n, revers_matrix);
 	}
 }
