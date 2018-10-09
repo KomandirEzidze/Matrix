@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <math.h>
 
-void addition();
-void subtraction();
-void multiplic_number();
-void multiplication();
-void transpose();
-void revers();
+void addition(FILE* file);
+void subtraction(FILE* file);
+void multiplic_number(FILE* file);
+void multiplication(FILE* file);
+void transpose(FILE* file);
+void revers(FILE* file);
+void inverse(FILE* file);
 
 void rules();
 
@@ -19,9 +20,8 @@ void write_int(FILE* file, int rows, int cols, int matrix[rows][cols]);
 void write_float(FILE* file, int rows, int cols, float matrix[rows][cols]);
 
 int det(FILE* file ,int n, int matrix[n][n]);
-void determinist();
+void determinist(FILE* file);
 
-void inverse();
 
 int main() {
 	int choice;
@@ -30,31 +30,43 @@ int main() {
 	printf("Ваш выбор: ");
 	scanf("%d", &choice);
 
+	FILE* file;
+	file = fopen("file.txt", "a");
+	if (file != NULL) {
+		fprintf(file, "--------------------------------------------------------------------\n");
+	}
+
 	switch (choice) {
 		case 1:
-			addition();
+			addition(file);
 			break;
 		case 2:
-			subtraction();
+			subtraction(file);
 			break;
 		case 3:
-			multiplic_number();
+			multiplic_number(file);
 			break;
 		case 4:
-			transpose();
+			transpose(file);
 			break;
 		case 5:
-			multiplication();
+			multiplication(file);
 			break;
 		case 6:
-			determinist();
+			determinist(file);
 			break;
 		case 7:
-		  revers();
+		  revers(file);
 			break;
 		default:
 			printf("Нет такого действия.\n");
 	}
+
+	if (file != NULL) {
+		fprintf(file, "--------------------------------------------------------------------\n");
+	}
+
+	fclose(file);
 
 	return 0;
 }
@@ -81,16 +93,24 @@ void get_matrix(int rows, int cols, int matrix[][cols]) {
 	}
 }
 
-void addition() {
+void addition(FILE* file) {
 	int rows, cols;
 
-	printf("Введите количество строк и столбцов матриц: ");
+	printf("Введите количество строк и столбцов матриц(через пробел): ");
 	scanf("%d %d", &rows, &cols);
 
 	int matrix1[rows][cols];
 	int matrix2[rows][cols];
 	get_matrix(rows, cols, matrix1);
 	get_matrix(rows, cols, matrix2);
+
+	if (file != NULL) {
+		fprintf(file, "Первая матрица:\n");
+		write_int(file, rows, cols, matrix1);
+
+		fprintf(file, "Вторая матрица:\n");
+		write_int(file, rows, cols, matrix2);
+	}
 
 	int matrix[rows][cols];
 	for (int i=0;i<rows;i++) {
@@ -100,6 +120,10 @@ void addition() {
 	}
 
 	show_int(rows, cols, matrix);
+	if (file != NULL) {
+		fprintf(file, "Сумма:\n");
+		write_int(file, rows, cols, matrix);
+	}
 }
 
 void show_int(int rows, int cols, int matrix[][cols]) {
@@ -146,16 +170,24 @@ void write_float(FILE* file, int rows, int cols, float matrix[rows][cols]) {
 	fprintf(file, "\n");
 }
 
-void subtraction() {
+void subtraction(FILE* file) {
 	int rows, cols;
 
-	printf("Введите количество строк и столбцов матриц: ");
+	printf("Введите количество строк и столбцов матриц(через пробел): ");
 	scanf("%d %d", &rows, &cols);
 
 	int matrix1[rows][cols];
 	int matrix2[rows][cols];
 	get_matrix(rows, cols, matrix1);
 	get_matrix(rows, cols, matrix2);
+
+	if (file != NULL) {
+		fprintf(file, "Первая матрица:\n");
+		write_int(file, rows, cols, matrix1);
+
+		fprintf(file, "Вторая матрица:\n");
+		write_int(file, rows, cols, matrix2);
+	}
 
 	int matrix[rows][cols];
 	for (int i=0;i<rows;i++) {
@@ -166,9 +198,14 @@ void subtraction() {
 
 	printf("Итоговая матрица:\n");
 	show_int(rows, cols, matrix);
+
+	if (file != NULL) {
+		fprintf(file, "Разность:\n");
+		write_int(file, rows, cols, matrix);
+	}
 }
 
-void multiplic_number() {
+void multiplic_number(FILE* file) {
 	int rows, cols;
 
 	printf("Введите количество строк и столбцов матрицы: ");
@@ -177,9 +214,15 @@ void multiplic_number() {
 	int matrix[rows][cols];
 	get_matrix(rows, cols, matrix);
 
+	// if (file != NULL) {
+	// 	fprintf(file, "Матрица:\n");
+	// 	write_int(file, rows, cols, matrix1);
+  //  }
+
 	int number;
 	printf("Введите число, на которое нужно умножить: ");
 	scanf("%d", &number);
+
 
 	for (int i=0;i<rows;i++) {
 		for (int j=0;j<cols;j++) {
@@ -187,11 +230,24 @@ void multiplic_number() {
 		}
 	}
 
+	if (file != NULL) {
+
+		fprintf(file, "Матрица:\n");
+		write_int(file, rows, cols, matrix);
+
+		fprintf(file, "Число: %d\n\n", number);
+	}
+
 	printf("Итоговая матрица:\n");
 	show_int(rows, cols, matrix);
+
+	if (file != NULL) {
+		fprintf(file, "Результат:\n");
+		write_int(file, rows, cols, matrix);
+	}
 }
 
-void multiplication() {
+void multiplication(FILE* file) {
 	int m, k, n;
 
 	printf("Введите количество строк и столбцов в первой матрице и количество столбцов во второй: ");
@@ -201,8 +257,8 @@ void multiplication() {
 	int matrix2[k][n];
 	get_matrix(m, k, matrix1);
 	get_matrix(k, n, matrix2);
-
 	int matrix[m][n];
+
 	for (int i=0;i<m;i++) {
 		for (int j=0;j<n;j++) {
 			matrix[i][j] = 0;
@@ -216,10 +272,10 @@ void multiplication() {
 	show_int(m, n, matrix);
 }
 
-void transpose() {
+void transpose(FILE* file) {
 	int rows, cols;
 
-	printf("Введите количество строк и столбцов в матрице: ");
+	printf("Введите количество строк и столбцов в матрице:\n ");
 	scanf("%d %d", &rows, &cols);
 
 	int original_matrix[rows][cols];
@@ -234,6 +290,10 @@ void transpose() {
 
 	printf("Транспонированная матрица:\n");
 	show_int(cols, rows, matrix);
+ 	if (file != NULL) {
+	 fprintf(file, "Транспонированная матрица\n");
+	 write_int(file, cols, rows, matrix);
+  }
 }
 
 int det(FILE* file, int n, int matrix[n][n]) {
@@ -281,7 +341,7 @@ int det(FILE* file, int n, int matrix[n][n]) {
 	return result;
 }
 
-void determinist() {
+void determinist(FILE* file) {
 	int n;
 	printf("Укажите для матрицы какого порядка нужно найти определитель: ");
 	scanf("%d", &n);
@@ -289,23 +349,17 @@ void determinist() {
 	int matrix[n][n];
 	get_matrix(n, n, matrix);
 
-	FILE *file;
-	file = fopen("file.txt", "a");
-
 	int result = det(file, n, matrix);
 	printf("Определитель матрицы равен: %d\n", result);
 }
 
-void revers(){
+void revers(FILE* file){
 	int n;
 	printf("Введите порядок матрицы: ");
 	scanf("%d", &n);
 
 	int matrix[n][n];
 	get_matrix(n, n, matrix);
-
-	FILE *file;
-	file = fopen("file.txt", "a");
 
 	int det_matrix = det(file, n, matrix);
 
@@ -378,6 +432,4 @@ void revers(){
 			write_float(file, n, n, revers_matrix);
 		}
 	}
-
-	fclose(file);
 }
